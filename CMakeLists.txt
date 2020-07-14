@@ -108,6 +108,7 @@ option(WITH_TALON6 "Install Talon6 Mount Driver" On)
 option(WITH_PENTAX "Install Pentax Driver" On)
 option(WITH_ASTROLINK4 "Install AstroLink4 Driver" On)
 option(WITH_AHP_INTERFEROMETER "Install AHP Interferometer Driver" On)
+option(WITH_ORION_SSG3 "Install Orion StarShoot G3 Driver" On)
 
 # Limit SVBONY to x86 architecture now
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "i[3-6]86")
@@ -571,6 +572,11 @@ endif(WITH_SV305)
 if (WITH_RPICAM)
 add_subdirectory(indi-rpicam)
 endif(WITH_RPICAM)
+
+# Orion SSG3
+if (WITH_ORION_SSG3)
+add_subdirectory(indi-orion-ssg3)
+endif(WITH_ORION_SSG3)
 
 # Check if libraries are found. If not, we must build them, install them, THEN run CMake again to build and instal the drivers. If all the libraraies are installed, then we build and install the drivers only now.
 if (LIBRARIES_FOUND)
