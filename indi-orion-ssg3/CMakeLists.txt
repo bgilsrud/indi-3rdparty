@@ -35,6 +35,7 @@ ENDIF ()
 ########### DSI ###########
 set(indiorionssg3_SRCS
    ${CMAKE_CURRENT_SOURCE_DIR}/orion_ssg3.c
+   ${CMAKE_CURRENT_SOURCE_DIR}/orion_ssg3_ccd.cpp
    )
 
 IF (UNITY_BUILD)

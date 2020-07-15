@@ -20,7 +20,7 @@
 
 #include <errno.h>
 #include <libusb-1.0/libusb.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include <stdlib.h>
 #include <endian.h>
 #include "orion_ssg3.h"
@@ -39,6 +39,8 @@
 #define ICX419_EFFECTIVE_X_COUNT 752
 #define ICX419_EFFECTIVE_Y_START 12
 #define ICX419_EFFECTIVE_Y_COUNT 582
+#define ICX419_PIXEL_SIZE_X 8.6
+#define ICX419_PIXEL_SIZE_Y 8.4
 
 enum {
     SSG3_CMD_BINNING = 13,
@@ -332,7 +334,19 @@ int orion_ssg3_set_binning(struct orion_ssg3 *ssg3, uint8_t x, uint8_t y)
  */
 int orion_ssg3_start_exposure(struct orion_ssg3 *ssg3, uint32_t msec)
 {
-    return orion_ssg3_control_set(ssg3, SSG3_CMD_START_EXPOSURE, msec, msec >> 16);
+    int rc;
+    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_START_EXPOSURE, msec, msec >> 16);
+    if (!rc) {
+        gettimeofday(&ssg3->exp_done_time, NULL);
+        ssg3->exp_done_time.tv_sec += msec / 1000;
+        ssg3->exp_done_time.tv_usec += (msec % 1000) * 1000; 
+        if (ssg3->exp_done_time.tv_usec > 1000000) {
+            ssg3->exp_done_time.tv_sec++;
+            ssg3->exp_done_time.tv_sec -= 1000000;
+        }
+    }
+
+    return rc;
 }
 
 static int get_x2(struct orion_ssg3 *ssg3)
@@ -428,4 +442,60 @@ done:
     free(tmp);
 
     return rc;
+}
+
+int orion_ssg3_get_gain(struct orion_ssg3 *ssg3, uint8_t *gain)
+{
+    *gain = ssg3->gain;
+
+    return 0;
+}
+
+int orion_ssg3_get_offset(struct orion_ssg3 *ssg3, uint8_t *offset)
+{
+    *offset = ssg3->offset;
+
+    return 0;
+}
+
+int orion_ssg3_get_image_width(struct orion_ssg3 *ssg3)
+{
+    return ssg3->x1 + ssg3->x_count - 1;
+}
+
+int orion_ssg3_get_image_height(struct orion_ssg3 *ssg3)
+{
+    return ssg3->y1 + ssg3->y_count - 1;
+}
+
+int orion_ssg3_get_pixel_bit_size(struct orion_ssg3 *ssg3)
+{
+    (void) ssg3;
+    return 16;
+}
+
+int orion_ssg3_get_pixel_size_x(struct orion_ssg3 *ssg3)
+{
+    (void) ssg3;
+    return ICX419_PIXEL_SIZE_X;
+}
+
+int orion_ssg3_get_pixel_size_y(struct orion_ssg3 *ssg3)
+{
+    (void) ssg3;
+    return ICX419_PIXEL_SIZE_Y;
+}
+
+int orion_ssg3_exposure_done(struct orion_ssg3 *ssg3)
+{
+    struct timeval now;
+
+    gettimeofday(&now, NULL);
+    if ((now.tv_sec > ssg3->exp_done_time.tv_sec) ||
+        ((now.tv_sec == ssg3->exp_done_time.tv_sec) &&
+         (now.tv_usec >= ssg3->exp_done_time.tv_usec))) {
+        return 1;
+    }
+        
+    return 0;
 }

@@ -20,6 +20,8 @@
 #ifndef ORION_SSG3_H
 #define ORION_SSG3_H
 #include <stdint.h>
+#include <sys/time.h>
+#include <libusb-1.0/libusb.h>
 
 struct orion_ssg3 {
     libusb_device_handle *devh;
@@ -31,6 +33,7 @@ struct orion_ssg3 {
     uint16_t x_count;
     uint16_t y1;
     uint16_t y_count;
+    struct timeval exp_done_time;
 };
 
 int orion_ssg3_open(struct orion_ssg3 *ssg3);
@@ -44,4 +47,13 @@ int orion_ssg3_subframe(struct orion_ssg3 *ssg3, uint16_t x1, uint16_t x_count,
         uint16_t y1, uint16_t y_count);
 int orion_ssg3_start_exposure(struct orion_ssg3 *ssg3, uint32_t msec);
 int orion_ssg3_image_download(struct orion_ssg3 *ssg3, uint8_t *buf, int len);
+
+int orion_ssg3_get_gain(struct orion_ssg3 *ssg3, uint8_t *gain);
+int orion_ssg3_get_offset(struct orion_ssg3 *ssg3, uint8_t *offset);
+int orion_ssg3_get_image_width(struct orion_ssg3 *ssg3);
+int orion_ssg3_get_image_height(struct orion_ssg3 *ssg3);
+int orion_ssg3_get_pixel_bit_size(struct orion_ssg3 *ssg3);
+int orion_ssg3_get_pixel_size_x(struct orion_ssg3 *ssg3);
+int orion_ssg3_get_pixel_size_y(struct orion_ssg3 *ssg3);
+int orion_ssg3_exposure_done(struct orion_ssg3 *ssg3);
 #endif /* ORION_SSG3_H */

@@ -21,6 +21,7 @@
 #pragma once
 
 #include <indiccd.h>
+#include "orion_ssg3.h"
 
 namespace SSG3
 {
@@ -78,5 +79,5 @@ class SSG3CCD : public INDI::CCD
     INumber OffsetN[1];
     INumberVectorProperty OffsetNP;
 
-    struct orion_ssg3 *ssg3;
+    struct orion_ssg3 ssg3;
 };
