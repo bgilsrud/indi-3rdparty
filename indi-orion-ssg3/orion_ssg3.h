@@ -23,6 +23,9 @@
 #include <sys/time.h>
 #include <libusb-1.0/libusb.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 struct orion_ssg3 {
     libusb_device_handle *devh;
     uint8_t gain;
@@ -56,4 +59,7 @@ int orion_ssg3_get_pixel_bit_size(struct orion_ssg3 *ssg3);
 int orion_ssg3_get_pixel_size_x(struct orion_ssg3 *ssg3);
 int orion_ssg3_get_pixel_size_y(struct orion_ssg3 *ssg3);
 int orion_ssg3_exposure_done(struct orion_ssg3 *ssg3);
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 #endif /* ORION_SSG3_H */
