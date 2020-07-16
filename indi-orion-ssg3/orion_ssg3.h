@@ -56,8 +56,8 @@ int orion_ssg3_get_offset(struct orion_ssg3 *ssg3, uint8_t *offset);
 int orion_ssg3_get_image_width(struct orion_ssg3 *ssg3);
 int orion_ssg3_get_image_height(struct orion_ssg3 *ssg3);
 int orion_ssg3_get_pixel_bit_size(struct orion_ssg3 *ssg3);
-int orion_ssg3_get_pixel_size_x(struct orion_ssg3 *ssg3);
-int orion_ssg3_get_pixel_size_y(struct orion_ssg3 *ssg3);
+float orion_ssg3_get_pixel_size_x(struct orion_ssg3 *ssg3);
+float orion_ssg3_get_pixel_size_y(struct orion_ssg3 *ssg3);
 int orion_ssg3_exposure_done(struct orion_ssg3 *ssg3);
 #ifdef __cplusplus
 }

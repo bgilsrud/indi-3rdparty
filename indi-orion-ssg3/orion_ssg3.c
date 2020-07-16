@@ -121,6 +121,16 @@ int orion_ssg3_open(struct orion_ssg3 *ssg3)
 
     libusb_init(NULL);
 
+    /* Set defaults since we don't know how to read them from the camera */
+    ssg3->offset = ORION_SSG3_DEFAULT_OFFSET;
+    ssg3->gain = ORION_SSG3_DEFAULT_GAIN;
+    ssg3->bin_x = ORION_SSG3_DEFAULT_BINNING;
+    ssg3->bin_y = ORION_SSG3_DEFAULT_BINNING;
+    ssg3->x1 = ICX419_EFFECTIVE_X_START;
+    ssg3->x_count = ICX419_EFFECTIVE_X_COUNT;
+    ssg3->y1 = ICX419_EFFECTIVE_Y_START;
+    ssg3->y_count = ICX419_EFFECTIVE_Y_COUNT;
+
     rc = libusb_get_device_list(NULL, &list);
     if (rc < 0) {
         return rc;
@@ -141,39 +151,31 @@ int orion_ssg3_open(struct orion_ssg3 *ssg3)
     }
 
     if (!found) {
-        return -ENODEV;
+        rc = -ENODEV;
+        goto done;
     }
 
 	rc = libusb_open(dev, &ssg3->devh);
 	if (rc) {
-		return -libusb_to_errno(rc);
+		rc = -libusb_to_errno(rc);
+        goto done;
 	}
     rc = libusb_claim_interface(ssg3->devh, ORION_SSG3_INTERFACE_NUM);
 	if (rc) {
 		libusb_close(ssg3->devh);
-		return -libusb_to_errno(rc);
+		rc = -libusb_to_errno(rc);
+        goto done;
 	}
-
-    /* Set defaults since we don't know how to read them from the camera */
-    ssg3->offset = ORION_SSG3_DEFAULT_OFFSET;
-    ssg3->gain = ORION_SSG3_DEFAULT_GAIN;
-    ssg3->bin_x = ORION_SSG3_DEFAULT_BINNING;
-    ssg3->bin_y = ORION_SSG3_DEFAULT_BINNING;
-    ssg3->x1 = ICX419_EFFECTIVE_X_START;
-    ssg3->x_count = ICX419_EFFECTIVE_X_COUNT;
-    ssg3->y1 = ICX419_EFFECTIVE_Y_START;
-    ssg3->y_count = ICX419_EFFECTIVE_Y_COUNT;
 
     rc = orion_ssg3_set_gain_offset(ssg3, ssg3->gain, ssg3->offset);
     if (rc) {
-        return rc;
+        goto done;
     }
 
     rc = orion_ssg3_set_binning(ssg3, ssg3->bin_x, ssg3->bin_y);
-    if (rc) {
-        return rc;
-    }
-    return 0;
+done:
+    libusb_free_device_list(list, 1);
+    return rc;
 }
 
 /**
@@ -183,8 +185,10 @@ int orion_ssg3_open(struct orion_ssg3 *ssg3)
  */
 int orion_ssg3_close(struct orion_ssg3 *ssg3)
 {
-    libusb_release_interface(ssg3->devh, ORION_SSG3_INTERFACE_NUM);
-	libusb_close(ssg3->devh);
+    if (ssg3->devh) {
+        libusb_release_interface(ssg3->devh, ORION_SSG3_INTERFACE_NUM);
+	    libusb_close(ssg3->devh);
+    }
 
 	return 0;
 }
@@ -460,12 +464,12 @@ int orion_ssg3_get_offset(struct orion_ssg3 *ssg3, uint8_t *offset)
 
 int orion_ssg3_get_image_width(struct orion_ssg3 *ssg3)
 {
-    return ssg3->x1 + ssg3->x_count - 1;
+    return ssg3->x_count / ssg3->bin_x;
 }
 
 int orion_ssg3_get_image_height(struct orion_ssg3 *ssg3)
 {
-    return ssg3->y1 + ssg3->y_count - 1;
+    return ssg3->y_count / ssg3->bin_y;
 }
 
 int orion_ssg3_get_pixel_bit_size(struct orion_ssg3 *ssg3)
@@ -474,13 +478,23 @@ int orion_ssg3_get_pixel_bit_size(struct orion_ssg3 *ssg3)
     return 16;
 }
 
-int orion_ssg3_get_pixel_size_x(struct orion_ssg3 *ssg3)
+/**
+ * Get the x dimension of the CCD pixel
+ * @param ssg3: The ssg3 structure used to communicate with camera
+ * @return: The x dimension of the pixel, in um
+ */
+float orion_ssg3_get_pixel_size_x(struct orion_ssg3 *ssg3)
 {
     (void) ssg3;
     return ICX419_PIXEL_SIZE_X;
 }
 
-int orion_ssg3_get_pixel_size_y(struct orion_ssg3 *ssg3)
+/**
+ * Get the y dimension of the CCD pixel
+ * @param ssg3: The ssg3 structure used to communicate with camera
+ * @return: The y dimension of the pixel, in um
+ */
+float orion_ssg3_get_pixel_size_y(struct orion_ssg3 *ssg3)
 {
     (void) ssg3;
     return ICX419_PIXEL_SIZE_Y;

@@ -82,6 +82,8 @@ bool SSG3CCD::Connect()
     int rc;
 
     rc = orion_ssg3_open(&ssg3);
+    /* DEBUG!! */
+    rc = 0;
     if (rc) {
         LOGF_INFO("Unable to find Orion StartShoot G3: %s\n", strerror(-rc));
         return false;
@@ -94,6 +96,8 @@ bool SSG3CCD::Connect()
     cap |= CCD_HAS_ST4_PORT; */
     /* FIXME once we know how to identify color vs mono:
     cap |= CCD_HAS_BAYER; */
+    /* FIXME once we know how to abort exposures
+    cap |= CCD_CAN_ABORT; */
 
     SetCCDCapability(cap);
 
@@ -134,12 +138,12 @@ bool SSG3CCD::initProperties()
 
     /* Add Gain number property */
     orion_ssg3_get_gain(&ssg3, &gain);
-    IUFillNumber(GainN, "GAIN", "Gain", "%" PRIu8, 0, 255, 1, gain);
+    IUFillNumber(GainN, "GAIN", "Gain", "%hhu", 0, 255, 1, gain);
     IUFillNumberVector(&GainNP, GainN, 1, getDeviceName(), "CCD_GAIN", "Gain", IMAGE_SETTINGS_TAB, IP_RW, 0, IPS_IDLE);
 
     /* Add Offset number property */
     orion_ssg3_get_offset(&ssg3, &offset);
-    IUFillNumber(OffsetN, "OFFSET", "Offset", "%" PRIu8, 0, 255, 1, offset);
+    IUFillNumber(OffsetN, "OFFSET", "Offset", "%hhu", 0, 255, 1, offset);
     IUFillNumberVector(&OffsetNP, OffsetN, 1, getDeviceName(), "CCD_OFFSET", "Offset", IMAGE_SETTINGS_TAB, IP_RW, 0,
                        IPS_IDLE);
 
