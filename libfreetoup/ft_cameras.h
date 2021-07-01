@@ -16,28 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "ft_camera.h"
+#ifndef FT_CAMERAS_H
+#define FT_CAMERAS_H
 
-
-static const struct ft_camera supported_cameras[] = {
-    {
-        .name = "Meade LPI-GM",
-        .vendor_id = 0xdead,
-        .vendor_id = 0xbeef,
-        .sensor = NULL
-    },
-    {0}
-};
-
-const struct ft_camera *ft_camera_get_by_vid_pid(uint16_t vid, uint16_t pid)
-{
-    const struct ft_camera *cam;
-
-    for (cam = supported_cameras; cam->name; cam++) {
-        if (vid == cam->vendor_id && pid == cam->product_id) {
-            return cam;
-        }
-    }
-
-    return NULL;
-}
+#endif /* FT_CAMERA_H */

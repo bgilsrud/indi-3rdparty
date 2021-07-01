@@ -14,8 +14,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY
 
 ADD_DEFINITIONS(-Wall -O2 -fPIC -g)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
-
 include_directories( ${CMAKE_CURRENT_BINARY_DIR})
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories( ${INDI_INCLUDE_DIR})

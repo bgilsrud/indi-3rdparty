@@ -23,10 +23,13 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#include <stdint.h>
+
 #define FREETOUP_MAX_CAMERAS 16
 
 typedef struct {
-    char displayname;
+    char displayname[64];
+    char id[64];
 } FreeToupDeviceV2;
 
 struct ft_sensor {
@@ -38,6 +41,7 @@ struct ft_camera {
     uint16_t product_id;  /* The USB product ID */
     struct ft_sensor *sensor; /* The sensor that the camera has */
 };
+
 /**
  * Get list of supported cameras that are found
  * @param list: Array of devices that are found
