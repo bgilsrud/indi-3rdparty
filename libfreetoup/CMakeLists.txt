@@ -19,7 +19,8 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories( ${INDI_INCLUDE_DIR})
 
 set(freetoup_LIB_SRCS
-    freetoup.c)
+    freetoup.c
+    ft_cameras.c)
 
 #build a shared library
 ADD_LIBRARY(freetoup SHARED ${freetoup_LIB_SRCS})

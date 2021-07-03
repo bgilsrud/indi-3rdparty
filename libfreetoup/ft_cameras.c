@@ -16,7 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "ft_camera.h"
+#include "ft_cameras.h"
+#include "freetoup.h"
+#include <stddef.h>
 
 
 static const struct ft_camera supported_cameras[] = {

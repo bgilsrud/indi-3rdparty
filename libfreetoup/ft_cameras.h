@@ -18,5 +18,8 @@
 
 #ifndef FT_CAMERAS_H
 #define FT_CAMERAS_H
+#include <stdint.h>
+
+const struct ft_camera *ft_camera_get_by_vid_pid(uint16_t vid, uint16_t pid);
 
 #endif /* FT_CAMERA_H */
