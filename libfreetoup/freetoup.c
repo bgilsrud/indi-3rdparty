@@ -22,7 +22,7 @@
 #include "freetoup.h"
 #include "ft_cameras.h"
 
-int freetoup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX_CAMERAS])
+int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
 {
     int rc;
     libusb_device **list;
@@ -35,16 +35,16 @@ int freetoup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX_CAMERAS])
 
     rc = libusb_init(NULL);
     if (rc) {
-        return -ENOTTY;
+        return rc;
     }
 
     cnt = libusb_get_device_list(NULL, &list);
     if (cnt < 0) {
-        return libusb_error_to_posix(cnt);
+        return cnt;
     }
 
     ft_device = NULL;
-    for (i = 0; (i < cnt) && (found < FREETOUP_MAX_CAMERAS); i++) {
+    for (i = 0; (i < cnt) && (found < FREETOUP_MAX); i++) {
         libusb_device *device = list[i];
 
         rc = libusb_get_device_descriptor(device, &desc);

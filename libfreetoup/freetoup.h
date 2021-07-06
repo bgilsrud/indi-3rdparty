@@ -25,7 +25,7 @@ extern "C" {
 
 #include <stdint.h>
 
-#define FREETOUP_MAX_CAMERAS 16
+#define FREETOUP_MAX 16
 
 typedef struct {
     char displayname[64];
@@ -47,7 +47,7 @@ struct ft_camera {
  * @param list: Array of devices that are found
  * @return: -errno on failure, the number of cameras found on success
  */
-int freetoup_EnumV2(FreeToupDeviceV2 list[FREETOUP_MAX_CAMERAS]);
+int FreeToup_EnumV2(FreeToupDeviceV2 list[FREETOUP_MAX]);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
