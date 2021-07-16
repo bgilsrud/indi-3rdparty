@@ -24,6 +24,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include <stdint.h>
+#include <libusb-1.0/libusb.h>
 
 #define FREETOUP_MAX 16
 
@@ -42,12 +43,27 @@ struct ft_camera {
     struct ft_sensor *sensor; /* The sensor that the camera has */
 };
 
+struct ft_handle {
+    libusb_device_handle *handle;
+};
+
+typedef struct ft_handle *HFreeToup;
+
 /**
  * Get list of supported cameras that are found
  * @param list: Array of devices that are found
  * @return: -errno on failure, the number of cameras found on success
  */
 int FreeToup_EnumV2(FreeToupDeviceV2 list[FREETOUP_MAX]);
+
+/**
+ * Open a handle to a FreeToup camera
+ * @param id: The id field from the FreeToupDeviceV2 structure for the camera
+ *            to be opened
+ * @return: A point to the handle on success, NULL on failure.
+ */
+HFreeToup FreeToup_Open(const char *id);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

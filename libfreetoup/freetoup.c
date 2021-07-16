@@ -62,3 +62,8 @@ int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
 
     return found;
 }
+
+HFreeToup FreeToup_Open(const char *id)
+{
+    return NULL;
+}
