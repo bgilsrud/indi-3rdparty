@@ -24,8 +24,8 @@
 static const struct ft_camera supported_cameras[] = {
     {
         .name = "Meade LPI-GM",
-        .vendor_id = 0xdead,
-        .vendor_id = 0xbeef,
+        .vendor_id = 0x0549,
+        .product_id = 0xe004,
         .sensor = NULL
     },
     {0}

@@ -19,6 +19,7 @@
 #include <errno.h>
 #include <libusb-1.0/libusb.h>
 #include <string.h>
+#include <stdio.h>
 #include "freetoup.h"
 #include "ft_cameras.h"
 
@@ -26,7 +27,6 @@ int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
 {
     int rc;
     libusb_device **list;
-    libusb_device *ft_device;
     ssize_t cnt;
     ssize_t i;
     struct libusb_device_descriptor desc;
@@ -43,7 +43,6 @@ int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
         return cnt;
     }
 
-    ft_device = NULL;
     for (i = 0; (i < cnt) && (found < FREETOUP_MAX); i++) {
         libusb_device *device = list[i];
 
@@ -55,7 +54,8 @@ int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
         if (cam) {
             strncpy(cams[found].displayname, cam->name, sizeof(cams[found].displayname));
             /* FIXME: Figure out what this should be */
-            strncpy(cams[found].id, cam->name, sizeof(cams[found].id));
+            snprintf(cams[found].id, sizeof(cams[found].id), "tp-%u-%u",
+                libusb_get_bus_number(device), libusb_get_device_address(device));
             found++;
         }
     }
