@@ -18,6 +18,7 @@
 
 #include <errno.h>
 #include <libusb-1.0/libusb.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include "freetoup.h"
@@ -54,7 +55,7 @@ int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
         if (cam) {
             strncpy(cams[found].displayname, cam->name, sizeof(cams[found].displayname));
             /* FIXME: Figure out what this should be */
-            snprintf(cams[found].id, sizeof(cams[found].id), "tp-%u-%u",
+            snprintf(cams[found].id, sizeof(cams[found].id), "ft-%u-%u",
                 libusb_get_bus_number(device), libusb_get_device_address(device));
             found++;
         }
@@ -65,5 +66,68 @@ int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
 
 HFreeToup FreeToup_Open(const char *id)
 {
-    return NULL;
+    // discover devices
+    libusb_device **list;
+    libusb_device *found = NULL;
+    ssize_t cnt;
+    ssize_t i = 0;
+    int bus;
+    int addr;
+    int rc;
+    HFreeToup ft = NULL;
+
+    rc = sscanf(id, "ft-%d-%d", &bus, &addr);
+    if (rc != 2) {
+        fprintf(stderr, "sscanf failed %d %s\n", rc, id);
+        return NULL;
+    }
+
+    cnt = libusb_get_device_list(NULL, &list);
+    if (cnt < 0) {
+        return NULL;
+    }
+    for (i = 0; i < cnt; i++) {
+        libusb_device *device = list[i];
+        if ((libusb_get_bus_number(device) == bus) &&
+            (libusb_get_device_address(device) == addr)) {
+
+            found = device;
+            break;
+        }
+    }
+    if (!found) {
+        fprintf(stderr, "not found\n");
+        goto done;
+    }
+    ft = malloc(sizeof(*ft));
+    if (!ft) {
+        goto done;
+    }
+    rc = libusb_open(found, &ft->handle);
+    if (rc) {
+        free(ft);
+        ft = NULL;
+    }
+done:
+    libusb_free_device_list(list, 1);
+
+    return ft;
 }
+
+void FreeToup_Close(HFreeToup ft)
+{
+    if (!ft) {
+        return;
+    }
+}
+
+int FreeToup_get_SerialNumber(HFreeToup h, char sn[32])
+{
+    return 0;
+}
+
+int FreeToup_get_FwVersion(HFreeToup h, char fwver[16])
+{
+    return 0;
+}
+

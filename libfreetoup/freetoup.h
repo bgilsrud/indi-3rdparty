@@ -64,6 +64,12 @@ int FreeToup_EnumV2(FreeToupDeviceV2 list[FREETOUP_MAX]);
  */
 HFreeToup FreeToup_Open(const char *id);
 
+void FreeToup_Close(HFreeToup ft);
+
+int FreeToup_get_SerialNumber(HFreeToup h, char sn[32]);
+
+int FreeToup_get_FwVersion(HFreeToup h, char fwver[16]);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
