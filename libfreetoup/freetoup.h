@@ -46,9 +46,17 @@ struct ft_camera {
 struct ft_handle {
     libusb_device_handle *handle;
     uint16_t key;   /* The scramble key in use */
+    char sn[32];    /* Serial number */
 };
 
 typedef struct ft_handle *HFreeToup;
+
+/**
+ * Get the version of the library.
+ * @param list: Array of devices that are found
+ * @return: -errno on failure, the number of cameras found on success
+ */
+const char *FreeToup_Version(void);
 
 /**
  * Get list of supported cameras that are found
@@ -69,7 +77,45 @@ void FreeToup_Close(HFreeToup ft);
 
 int FreeToup_get_SerialNumber(HFreeToup h, char sn[32]);
 
-int FreeToup_get_FwVersion(HFreeToup h, char fwver[16]);
+/**
+ * Get the firmware version of a camera.
+ * @param ft: The freetoup handle from Open
+ * @param fwver: A buffer that can store at least 16 bytes
+ * @return: 0 on success, < 0 on error
+ */
+int FreeToup_get_FwVersion(HFreeToup ft, char *fwver);
+
+/**
+ * Get the hardware version of a camera.
+ * @param ft: The freetoup handle from Open
+ * @param hwver: A buffer that can store at least 16 bytes
+ * @return: 0 on success, < 0 on error
+ */
+int FreeToup_get_HwVersion(HFreeToup ft, char *hwver);
+
+/**
+ * Get the FPGA version of a camera.
+ * @param ft: The freetoup handle from Open
+ * @param hwver: A buffer that can store at least 16 bytes
+ * @return: 0 on success, < 0 on error
+ */
+int FreeToup_get_FpgaVersion(HFreeToup ft, char *fpgaver);
+
+/**
+ * Get the revision of a camera.
+ * @param ft: The freetoup handle from Open
+ * @param revision: Buffer to store revision in
+ * @return: 0 on success, < 0 on error
+ */
+int FreeToup_get_Revision(HFreeToup ft, uint16_t *revision);
+
+/**
+ * Get the production date of a camera.
+ * @param ft: The freetoup handle from Open
+ * @param date: A buffer that can store at least 10 bytes
+ * @return: 0 on success, < 0 on error
+ */
+int FreeToup_get_ProductionDate(HFreeToup ft, char *date);
 
 #ifdef __cplusplus
 }

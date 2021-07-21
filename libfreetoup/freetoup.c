@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <endian.h>
 #include <errno.h>
 #include <libusb-1.0/libusb.h>
 #include <stdlib.h>
@@ -23,12 +24,14 @@
 #include <stdio.h>
 #include "freetoup.h"
 #include "ft_cameras.h"
+#include "config.h"
 
 enum {
     TOUP_CMD_READ_SENSOR_REG = 10,
     TOUP_CMD_WRITE_SENSOR_REG = 11,
     TOUP_CMD_SCRAMBLE_KEY = 22,
     TOUP_CMD_FW_VER = 30,
+    TOUP_CMD_HW_VER = 31,
     TOUP_CMD_READ_EEPROM = 32,
     TOUP_CMD_CRYPT_CHALLENGE = 73,
     TOUP_CMD_CRYPT_RESPONSE = 105,
@@ -191,8 +194,20 @@ void FreeToup_Close(HFreeToup ft)
     free(ft);
 }
 
-int FreeToup_get_SerialNumber(HFreeToup h, char sn[32])
+const char *FreeToup_Version(void)
 {
+    return PACKAGE_VERSION;
+}
+
+/**
+ * Serial number format is as follows:
+ * TPYYMMDD.*
+ */
+int FreeToup_get_SerialNumber(HFreeToup ft, char *sn)
+{
+    if (ft->sn[0]) {
+        memset(sn, 0, 32);
+    }
     return 0;
 }
 
@@ -208,3 +223,42 @@ int FreeToup_get_FwVersion(HFreeToup ft, char *fwver)
     return 0;
 }
 
+int FreeToup_get_HwVersion(HFreeToup ft, char *hwver)
+{
+    int rc;
+    rc = libusb_control_transfer(ft->handle, TOUPCAM_CONTROL_WRITE,
+            TOUP_CMD_HW_VER, 0, 0, (uint8_t *) hwver, 16, TOUPCAM_DEFAULT_CONTROL_TIMEOUT_MS);
+    if (rc < 0) {
+        return rc;
+    }
+
+    return 0;
+}
+
+int FreeToup_get_FpgaVersion(HFreeToup ft, char *fpgaver)
+{
+    *fpgaver = 0;
+    /* There is no USB traffic for this command. Maybe it's encoded in the fw somewhere? */
+    return 0;
+}
+
+int FreeToup_get_ProductionDate(HFreeToup ft, char *date)
+{
+    int rc;
+    rc = libusb_control_transfer(ft->handle, TOUPCAM_CONTROL_WRITE,
+            TOUP_CMD_HW_VER, 0, 0, (uint8_t *) date, 10, TOUPCAM_DEFAULT_CONTROL_TIMEOUT_MS);
+    if (rc < 0) {
+        return rc;
+    }
+
+    return 0;
+}
+
+int FreeToup_get_Revision(HFreeToup ft, uint16_t *revision)
+{
+    int rc;
+    uint16_t val = 0;
+    /* There is no USB traffic for this command. It's probably in the EEPROM data */
+    *revision = le16toh(val);
+    return 0;
+}
