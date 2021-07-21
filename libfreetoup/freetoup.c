@@ -35,6 +35,11 @@ enum {
     TOUP_CMD_READ_EEPROM = 32,
     TOUP_CMD_CRYPT_CHALLENGE = 73,
     TOUP_CMD_CRYPT_RESPONSE = 105,
+    TOUP_CMD_ST4_NORTH = 130,
+    TOUP_CMD_ST4_SOUTH = 131,
+    TOUP_CMD_ST4_EAST = 132,
+    TOUP_CMD_ST4_WEST = 133,
+    TOUP_CMD_ST4_STOP = 134,
 };
 
 int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
@@ -281,3 +286,31 @@ int FreeToup_get_Revision(HFreeToup ft, uint16_t *revision)
     *revision = le16toh(val);
     return 0;
 }
+
+int FreeToup_Flush(HFreeToup ft)
+{
+    return 0;
+}
+
+int FreeToup_get_AutoExpoEnable(HFreeToup ft, int *aee)
+{
+    return 0;
+}
+
+int FreeToup_ST4PlusGuide(HFreeToup ft, int dir, int ms)
+{
+    uint16_t wValue = ms / 30;
+    uint16_t wIndex= ms % 30;
+    int rc;
+
+    if (dir < 0 || dir > 4)
+        return -1;
+
+    rc = libusb_control_transfer(ft->handle, TOUPCAM_CONTROL_WRITE,
+            TOUP_CMD_ST4_NORTH + dir, wValue, wIndex, NULL, 0, TOUPCAM_DEFAULT_CONTROL_TIMEOUT_MS);
+    if (rc < 0) {
+        return rc;
+    }
+    return 0;
+}
+

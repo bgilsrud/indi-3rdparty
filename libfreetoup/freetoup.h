@@ -117,6 +117,12 @@ int FreeToup_get_Revision(HFreeToup ft, uint16_t *revision);
  */
 int FreeToup_get_ProductionDate(HFreeToup ft, char *date);
 
+int FreeToup_Flush(HFreeToup ft);
+
+int FreeToup_get_AutoExpoEnable(HFreeToup ft, int *aee);
+
+int FreeToup_ST4PlusGuide(HFreeToup ft, int dir, int ms);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
