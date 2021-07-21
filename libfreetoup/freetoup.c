@@ -205,9 +205,25 @@ const char *FreeToup_Version(void)
  */
 int FreeToup_get_SerialNumber(HFreeToup ft, char *sn)
 {
+    uint32_t eeprom_len;
+    int rc;
+
     if (ft->sn[0]) {
         memset(sn, 0, 32);
     }
+    rc = libusb_control_transfer(ft->handle, TOUPCAM_CONTROL_WRITE,
+            TOUP_CMD_READ_EEPROM, 0, 0, (uint8_t *) &eeprom_len, 4, TOUPCAM_DEFAULT_CONTROL_TIMEOUT_MS);
+    if (rc != 4) {
+        return -EIO;
+    }
+    eeprom_len = le32toh(eeprom_len);
+    rc = libusb_control_transfer(ft->handle, TOUPCAM_CONTROL_WRITE,
+            TOUP_CMD_READ_EEPROM, eeprom_len, 0, (uint8_t *) ft->sn, 32, TOUPCAM_DEFAULT_CONTROL_TIMEOUT_MS);
+    if (rc < 0) {
+        return -EIO;
+    }
+
+    strncpy(sn, ft->sn, 32);
     return 0;
 }
 
