@@ -159,9 +159,12 @@ HFreeToup FreeToup_Open(const char *id)
         goto fail;
 
     rc = ft_set_scramble_key(ft, 0);
-    if (rc) {
+    if (rc)
         goto fail;
-    }
+
+    rc = FreeToup_get_SerialNumber(ft, NULL);
+    if (rc)
+        goto fail;
 done:
     libusb_free_device_list(list, 1);
 
@@ -209,7 +212,9 @@ int FreeToup_get_SerialNumber(HFreeToup ft, char *sn)
     int rc;
 
     if (ft->sn[0]) {
-        memset(sn, 0, 32);
+        if (sn)
+            strcpy(sn, ft->sn);
+        return 0;
     }
     rc = libusb_control_transfer(ft->handle, TOUPCAM_CONTROL_WRITE,
             TOUP_CMD_READ_EEPROM, 0, 0, (uint8_t *) &eeprom_len, 4, TOUPCAM_DEFAULT_CONTROL_TIMEOUT_MS);
@@ -223,7 +228,9 @@ int FreeToup_get_SerialNumber(HFreeToup ft, char *sn)
         return -EIO;
     }
 
-    strncpy(sn, ft->sn, 32);
+    if (sn)
+        strncpy(sn, ft->sn, 32);
+
     return 0;
 }
 
@@ -260,19 +267,15 @@ int FreeToup_get_FpgaVersion(HFreeToup ft, char *fpgaver)
 
 int FreeToup_get_ProductionDate(HFreeToup ft, char *date)
 {
-    int rc;
-    rc = libusb_control_transfer(ft->handle, TOUPCAM_CONTROL_WRITE,
-            TOUP_CMD_HW_VER, 0, 0, (uint8_t *) date, 10, TOUPCAM_DEFAULT_CONTROL_TIMEOUT_MS);
-    if (rc < 0) {
-        return rc;
-    }
-
+    strncpy(date, ft->sn, 8);
+    date[8] = 0;
+    date[0] = '2';
+    date[1] = '0';
     return 0;
 }
 
 int FreeToup_get_Revision(HFreeToup ft, uint16_t *revision)
 {
-    int rc;
     uint16_t val = 0;
     /* There is no USB traffic for this command. It's probably in the EEPROM data */
     *revision = le16toh(val);
