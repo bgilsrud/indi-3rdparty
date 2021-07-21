@@ -45,6 +45,7 @@ struct ft_camera {
 
 struct ft_handle {
     libusb_device_handle *handle;
+    uint16_t key;   /* The scramble key in use */
 };
 
 typedef struct ft_handle *HFreeToup;

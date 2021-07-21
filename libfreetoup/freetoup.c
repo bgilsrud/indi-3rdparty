@@ -24,6 +24,16 @@
 #include "freetoup.h"
 #include "ft_cameras.h"
 
+enum {
+    TOUP_CMD_READ_SENSOR_REG = 10,
+    TOUP_CMD_WRITE_SENSOR_REG = 11,
+    TOUP_CMD_SCRAMBLE_KEY = 22,
+    TOUP_CMD_FW_VER = 30,
+    TOUP_CMD_READ_EEPROM = 32,
+    TOUP_CMD_CRYPT_CHALLENGE = 73,
+    TOUP_CMD_CRYPT_RESPONSE = 105,
+};
+
 int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
 {
     int rc;
@@ -64,6 +74,38 @@ int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
     return found;
 }
 
+/* The touptek cameras implement a vendor defined interface that consist of two bulk endpoints */
+#define TOUPTEK_USB_INTERFACE_NUMBER 0
+
+#define TOUPCAM_CONTROL_WRITE (LIBUSB_ENDPOINT_IN | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE)
+#define TOUPCAM_CONTROL_READ (LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE)
+#define TOUPCAM_DEFAULT_CONTROL_TIMEOUT_MS 500
+#define TOUPCAM_STATUS_SUCCESS 0x08
+
+/**
+ * The touptek cameras scramble the data of certain commands. It seems this was
+ * in order to prevent reverse engineering (LOL). The key is set with this
+ * command. I couldn't bring myself to call this encryption because it's a
+ * bitshift and XOR. There's no reason for use to set the key to anything other
+ * than 0, which effectively disables the scrambling.
+ */
+static int ft_set_scramble_key(HFreeToup ft, uint16_t key)
+{
+    int rc;
+    uint8_t rsp[2];
+    rc = libusb_control_transfer(ft->handle, TOUPCAM_CONTROL_WRITE,
+            TOUP_CMD_SCRAMBLE_KEY, key, 0, rsp, 2, TOUPCAM_DEFAULT_CONTROL_TIMEOUT_MS);
+    if (rc != 1) {
+        return -EIO;
+    }
+    if (rsp[0] != TOUPCAM_STATUS_SUCCESS) {
+        return -1;
+    }
+
+    ft->key = key;
+    return 0;
+}
+
 HFreeToup FreeToup_Open(const char *id)
 {
     // discover devices
@@ -74,6 +116,7 @@ HFreeToup FreeToup_Open(const char *id)
     int bus;
     int addr;
     int rc;
+    int claimed = 0;
     HFreeToup ft = NULL;
 
     rc = sscanf(id, "ft-%d-%d", &bus, &addr);
@@ -97,21 +140,43 @@ HFreeToup FreeToup_Open(const char *id)
     }
     if (!found) {
         fprintf(stderr, "not found\n");
-        goto done;
+        goto fail;
     }
     ft = malloc(sizeof(*ft));
-    if (!ft) {
+    if (!ft)
         goto done;
-    }
+
+    memset(ft, 0 , sizeof(*ft));
     rc = libusb_open(found, &ft->handle);
+    if (rc)
+        goto fail;
+
+    rc = libusb_claim_interface(ft->handle, TOUPTEK_USB_INTERFACE_NUMBER);
+    if (rc != LIBUSB_SUCCESS)
+        goto fail;
+
+    rc = ft_set_scramble_key(ft, 0);
     if (rc) {
-        free(ft);
-        ft = NULL;
+        goto fail;
     }
 done:
     libusb_free_device_list(list, 1);
 
     return ft;
+
+fail:
+    libusb_free_device_list(list, 1);
+    if (claimed) {
+        libusb_release_interface(ft->handle, TOUPTEK_USB_INTERFACE_NUMBER);
+    }
+    if (ft) {
+        if (ft->handle) {
+            libusb_close(ft->handle);
+        }
+        free(ft);
+        ft = NULL;
+    }
+    return NULL;
 }
 
 void FreeToup_Close(HFreeToup ft)
@@ -119,6 +184,11 @@ void FreeToup_Close(HFreeToup ft)
     if (!ft) {
         return;
     }
+    if (ft->handle) {
+        libusb_release_interface(ft->handle, TOUPTEK_USB_INTERFACE_NUMBER);
+        libusb_close(ft->handle);
+    }
+    free(ft);
 }
 
 int FreeToup_get_SerialNumber(HFreeToup h, char sn[32])
@@ -126,8 +196,15 @@ int FreeToup_get_SerialNumber(HFreeToup h, char sn[32])
     return 0;
 }
 
-int FreeToup_get_FwVersion(HFreeToup h, char fwver[16])
+int FreeToup_get_FwVersion(HFreeToup ft, char *fwver)
 {
+    int rc;
+    rc = libusb_control_transfer(ft->handle, TOUPCAM_CONTROL_WRITE,
+            TOUP_CMD_FW_VER, 0, 0, (uint8_t *) fwver, 16, TOUPCAM_DEFAULT_CONTROL_TIMEOUT_MS);
+    if (rc < 0) {
+        return rc;
+    }
+
     return 0;
 }
 
