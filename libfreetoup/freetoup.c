@@ -49,7 +49,7 @@ int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
     ssize_t cnt;
     ssize_t i;
     struct libusb_device_descriptor desc;
-    struct ft_camera *cam;
+    const struct ft_camera *cam;
     int found = 0;
 
     rc = libusb_init(NULL);
@@ -71,7 +71,7 @@ int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
         }
         cam = ft_camera_get_by_vid_pid(desc.idVendor, desc.idProduct);
         if (cam) {
-            strncpy(cams[found].displayname, cam->name, sizeof(cams[found].displayname));
+            strncpy(cams[found].displayname, cam->name, sizeof(cams[found].displayname) - 1);
             /* FIXME: Figure out what this should be */
             snprintf(cams[found].id, sizeof(cams[found].id), "ft-%u-%u",
                 libusb_get_bus_number(device), libusb_get_device_address(device));
