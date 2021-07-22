@@ -17,6 +17,7 @@ find_package(ALTAIRCAM REQUIRED)
 find_package(STARSHOOTG REQUIRED)
 find_package(NNCAM REQUIRED)
 find_package(MALLINCAM REQUIRED)
+find_package(FREETOUP REQUIRED)
 
 set(TOUPBASE_VERSION_MAJOR 0)
 set(TOUPBASE_VERSION_MINOR 5)
@@ -33,6 +34,7 @@ include_directories( ${ALTAIRCAM_INCLUDE_DIR})
 include_directories( ${STARSHOOTG_INCLUDE_DIR})
 include_directories( ${NNCAM_INCLUDE_DIR})
 include_directories( ${MALLINCAM_INCLUDE_DIR})
+include_directories( ${FREETOUP_INCLUDE_DIR})
 
 include(CMakeCommon)
 
@@ -63,6 +65,11 @@ add_executable(indi_mallincam_ccd ${indi_toupbase_SRCS})
 target_compile_definitions(indi_mallincam_ccd PRIVATE "-DBUILD_MALLINCAM")
 target_link_libraries(indi_mallincam_ccd ${INDI_LIBRARIES} ${CFITSIO_LIBRARIES} ${MALLINCAM_LIBRARIES} ${USB1_LIBRARIES} ${ZLIB_LIBRARY} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
+########### indi_freetoup_ccd ###########
+add_executable(indi_freetoup_ccd ${indi_toupbase_SRCS})
+target_compile_definitions(indi_freetoup_ccd PRIVATE "-DBUILD_FREETOUP")
+target_link_libraries(indi_freetoup_ccd ${INDI_LIBRARIES} ${CFITSIO_LIBRARIES} ${FREETOUP_LIBRARIES} ${USB1_LIBRARIES} ${ZLIB_LIBRARY} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+
 #####################################
 
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
@@ -71,6 +78,7 @@ target_link_libraries(indi_altair_ccd rt)
 target_link_libraries(indi_starshootg_ccd rt)
 target_link_libraries(indi_nncam_ccd rt)
 target_link_libraries(indi_mallincam_ccd rt)
+target_link_libraries(indi_freetoup_ccd rt)
 endif (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
 
 install(TARGETS
@@ -79,6 +87,7 @@ install(TARGETS
     indi_starshootg_ccd
     indi_nncam_ccd
     indi_mallincam_ccd
+    indi_freetoup_ccd
     RUNTIME DESTINATION bin)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/indi_toupbase.xml DESTINATION ${INDI_DATA_DIR})

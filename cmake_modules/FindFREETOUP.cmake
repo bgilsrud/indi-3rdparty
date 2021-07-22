@@ -1,9 +1,9 @@
-# - Try to find FreeToup Camera Library
+# - Try to find FREETOUP Camera Library
 # Once done this will define
 #
-#  FREETOUP_FOUND - system has FreeToup
-#  FREETOUP_INCLUDE_DIR - the FreeToup include directory
-#  FREETOUP_LIBRARIES - Link these to use FreeToup
+#  FREETOUP_FOUND - system has Levenhuk
+#  FREETOUP_INCLUDE_DIR - the Levenhuk include directory
+#  FREETOUP_LIBRARIES - Link these to use Levenhuk
 
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
@@ -22,7 +22,7 @@ else (FREETOUP_INCLUDE_DIR AND FREETOUP_LIBRARIES)
     ${GNUWIN32_DIR}/include
   )
 
-  find_library(FREETOUP_LIBRARIES NAMES freetoup 
+  find_library(FREETOUP_LIBRARIES NAMES freetoup
     PATHS
     ${_obLinkDir}
     ${GNUWIN32_DIR}/lib
@@ -33,7 +33,6 @@ else (FREETOUP_INCLUDE_DIR AND FREETOUP_LIBRARIES)
   else (FREETOUP_INCLUDE_DIR AND FREETOUP_LIBRARIES)
     set(FREETOUP_FOUND FALSE)
   endif(FREETOUP_INCLUDE_DIR AND FREETOUP_LIBRARIES)
-
 
   if (FREETOUP_FOUND)
     if (NOT FREETOUP_FIND_QUIETLY)
@@ -46,5 +45,5 @@ else (FREETOUP_INCLUDE_DIR AND FREETOUP_LIBRARIES)
   endif (FREETOUP_FOUND)
 
   mark_as_advanced(FREETOUP_INCLUDE_DIR FREETOUP_LIBRARIES)
-  
+
 endif (FREETOUP_INCLUDE_DIR AND FREETOUP_LIBRARIES)

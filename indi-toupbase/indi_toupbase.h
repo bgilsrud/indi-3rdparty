@@ -59,6 +59,13 @@
 #define XP(x) Nncam##x
 #define THAND HNncam
 #define DNAME "Levenhuk"
+#elif BUILD_FREETOUP
+#include <freetoup.h>
+#define FP(x) FreeToup_##x
+#define CP(x) FREETOUP_##x
+#define XP(x) FreeToup##x
+#define THAND HFreeToup
+#define DNAME "FreeToup"
 #endif
 
 #define RAW_SUPPORTED   (CP(FLAG_RAW10) | CP(FLAG_RAW12) | CP(FLAG_RAW14) | CP(FLAG_RAW16))
