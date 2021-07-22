@@ -538,3 +538,30 @@ int FreeToup_Trigger(HFreeToup h, unsigned short nNumber)
     return 0;
 }
 
+int FreeToup_get_ExpoAGainRange(HFreeToup h, unsigned short* nMin, unsigned short* nMax, unsigned short* nDef)
+{
+    /* TODO */
+    return 0;
+}
+
+int FreeToup_get_WhiteBalanceGain(HFreeToup h, int aGain[3])
+{
+    /* TODO */
+    return 0;
+}
+
+int FreeToup_put_TempTintInit(HFreeToup h, PITOUPCAM_TEMPTINT_CALLBACK fnTTProc, void* pTTCtx)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_TempTint(HFreeToup h, int nTemp, int nTint)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_AwbOnce(HFreeToup h, PITOUPCAM_TEMPTINT_CALLBACK fnTTProc, void* pTTCtx)
+{
+    /* TODO */
+    return 0;
+}
