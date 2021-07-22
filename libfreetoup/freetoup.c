@@ -289,13 +289,10 @@ int FreeToup_get_Revision(HFreeToup ft, uint16_t *revision)
 
 int FreeToup_Flush(HFreeToup ft)
 {
+    /* TODO */
     return 0;
 }
 
-int FreeToup_get_AutoExpoEnable(HFreeToup ft, int *aee)
-{
-    return 0;
-}
 
 int FreeToup_ST4PlusGuide(HFreeToup ft, int dir, int ms)
 {
@@ -311,6 +308,233 @@ int FreeToup_ST4PlusGuide(HFreeToup ft, int dir, int ms)
     if (rc < 0) {
         return rc;
     }
+    return 0;
+}
+
+int FreeToup_AbbOnce(HFreeToup ft, PITOUPCAM_BLACKBALANCE_CALLBACK fnBBProc, void* pBBCtx)
+{
+    /* TODO */
+    return 0;
+}
+
+int FreeToup_AwbInit(HFreeToup h, PITOUPCAM_WHITEBALANCE_CALLBACK fnWBProc, void* pWBCtx)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_AutoExpoEnable(HFreeToup h, int* bAutoExposure)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_BlackBalance(HFreeToup h, unsigned short aSub[3])
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_Brightness(HFreeToup h, int* Brightness)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_Contrast(HFreeToup h, int* Contrast)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_eSize(HFreeToup h, unsigned* pnResolutionIndex)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_ExpoAGain(HFreeToup h, unsigned short* AGain)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_ExpTimeRange(HFreeToup h, unsigned* nMin, unsigned* nMax, unsigned* nDef)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_Gamma(HFreeToup h, int* Gamma)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_Hue(HFreeToup h, int* Hue)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_LevelRange(HFreeToup h, unsigned short aLow[4], unsigned short aHigh[4])
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_MaxBitDepth(HFreeToup h)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_Option(HFreeToup h, unsigned iOption, int* piValue)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_RawFormat(HFreeToup h, unsigned* nFourCC, unsigned* bitsperpixel)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_ResolutionNumber(HFreeToup h)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_Resolution(HFreeToup h, unsigned nResolutionIndex, int* pWidth, int* pHeight)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_Saturation(HFreeToup h, int* Saturation)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_Speed(HFreeToup h, unsigned short* pSpeed)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_get_Temperature(HFreeToup h, short* pTemperature)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_WhiteBalanceGain(HFreeToup h, int aGain[3])
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_PullImageV2(HFreeToup h, void* pImageData, int bits, FreeToupFrameInfoV2* pInfo)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_PullStillImageV2(HFreeToup h, void* pImageData, int bits, FreeToupFrameInfoV2* pInfo)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_AutoExpoEnable(HFreeToup h, int bAutoExposure)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_BlackBalance(HFreeToup h, unsigned short aSub[3])
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_Brightness(HFreeToup h, int Brightness)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_Contrast(HFreeToup h, int Contrast)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_eSize(HFreeToup h, unsigned nResolutionIndex)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_ExpoAGain(HFreeToup h, unsigned short AGain)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_ExpoTime(HFreeToup h, unsigned Time)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_Gamma(HFreeToup h, int Gamma)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_Hue(HFreeToup h, int Hue)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_LevelRange(HFreeToup h, unsigned short aLow[4], unsigned short aHigh[4])
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_Mode(HFreeToup h, int bSkip)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_Option(HFreeToup h, unsigned iOption, int iValue)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_RealTime(HFreeToup h, int val)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_Roi(HFreeToup h, unsigned xOffset, unsigned yOffset, unsigned xWidth, unsigned yHeight)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_Saturation(HFreeToup h, int Saturation)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_Speed(HFreeToup h, unsigned short nSpeed)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_put_Temperature(HFreeToup h, short nTemperature)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_Snap(HFreeToup h, unsigned nResolutionIndex)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_StartPullModeWithCallback(HFreeToup h, PTOUPCAM_EVENT_CALLBACK pEventCallback, void* pCallbackContext)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_StartPushModeV3(HFreeToup h, PTOUPCAM_DATA_CALLBACK_V3 pDataCallback, void* pDataCallbackCtx, PTOUPCAM_EVENT_CALLBACK pEventCallback, void* pEventCallbackContext)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_Stop(HFreeToup h)
+{
+    /* TODO */
+    return 0;
+}
+int FreeToup_Trigger(HFreeToup h, unsigned short nNumber)
+{
+    /* TODO */
     return 0;
 }
 
