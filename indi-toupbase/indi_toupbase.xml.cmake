@@ -25,5 +25,9 @@
                 <driver name="Mallincam">indi_mallincam_ccd</driver>
                 <version>@TOUPBASE_VERSION_MAJOR@.@TOUPBASE_VERSION_MINOR@</version>
         </device>
+        <device label="FreeToup" mdpd="true" manufacturer="Touptek">
+                <driver name="FreeToup">indi_freetoup_ccd</driver>
+                <version>@TOUPBASE_VERSION_MAJOR@.@TOUPBASE_VERSION_MINOR@</version>
+        </device>
 </devGroup>
 </driversList>

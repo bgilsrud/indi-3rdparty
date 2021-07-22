@@ -28,19 +28,48 @@ extern "C" {
 
 #define FREETOUP_MAX 16
 
-#define FREETOUP_FLAG_BINSKIP_SUPPORTED (1 << 0)
-#define FREETOUP_FLAG_CGHDR (1 << 1)
-#define FREETOUP_FLAG_CG (1 << 2)
-#define FREETOUP_FLAG_FAN (1 << 3)
-#define FREETOUP_FLAG_GETTEMPERATURE (1 << 4)
-#define FREETOUP_FLAG_MONO (1 << 5)
-#define FREETOUP_FLAG_RAW10 (1 << 6)
-#define FREETOUP_FLAG_RAW12 (1 << 7)
-#define FREETOUP_FLAG_RAW14 (1 << 8)
-#define FREETOUP_FLAG_RAW16 (1 << 9)
-#define FREETOUP_FLAG_ROI_HARDWARE (1 << 10)
-#define FREETOUP_FLAG_ST4 (1 << 11)
-#define FREETOUP_FLAG_TEC_ONOFF (1 << 12)
+#define FREETOUP_FLAG_CMOS                0x00000001  /* cmos sensor */
+#define FREETOUP_FLAG_CCD_PROGRESSIVE     0x00000002  /* progressive ccd sensor */
+#define FREETOUP_FLAG_CCD_INTERLACED      0x00000004  /* interlaced ccd sensor */
+#define FREETOUP_FLAG_ROI_HARDWARE        0x00000008  /* support hardware ROI */
+#define FREETOUP_FLAG_MONO                0x00000010  /* monochromatic */
+#define FREETOUP_FLAG_BINSKIP_SUPPORTED   0x00000020  /* support bin/skip mode, see Toupcam_put_Mode and Toupcam_get_Mode */
+#define FREETOUP_FLAG_USB30               0x00000040  /* usb3.0 */
+#define FREETOUP_FLAG_TEC                 0x00000080  /* Thermoelectric Cooler */
+#define FREETOUP_FLAG_USB30_OVER_USB20    0x00000100  /* usb3.0 camera connected to usb2.0 port */
+#define FREETOUP_FLAG_ST4                 0x00000200  /* ST4 port */
+#define FREETOUP_FLAG_GETTEMPERATURE      0x00000400  /* support to get the temperature of the sensor */
+#define FREETOUP_FLAG_RAW10               0x00001000  /* pixel format, RAW 10bits */
+#define FREETOUP_FLAG_RAW12               0x00002000  /* pixel format, RAW 12bits */
+#define FREETOUP_FLAG_RAW14               0x00004000  /* pixel format, RAW 14bits */
+#define FREETOUP_FLAG_RAW16               0x00008000  /* pixel format, RAW 16bits */
+#define FREETOUP_FLAG_FAN                 0x00010000  /* cooling fan */
+#define FREETOUP_FLAG_TEC_ONOFF           0x00020000  /* Thermoelectric Cooler can be turn on or off, support to set the target temperature of TEC */
+#define FREETOUP_FLAG_ISP                 0x00040000  /* ISP (Image Signal Processing) chip */
+#define FREETOUP_FLAG_TRIGGER_SOFTWARE    0x00080000  /* support software trigger */
+#define FREETOUP_FLAG_TRIGGER_EXTERNAL    0x00100000  /* support external trigger */
+#define FREETOUP_FLAG_TRIGGER_SINGLE      0x00200000  /* only support trigger single: one trigger, one image */
+#define FREETOUP_FLAG_BLACKLEVEL          0x00400000  /* support set and get the black level */
+#define FREETOUP_FLAG_AUTO_FOCUS          0x00800000  /* support auto focus */
+#define FREETOUP_FLAG_BUFFER              0x01000000  /* frame buffer */
+#define FREETOUP_FLAG_DDR                 0x02000000  /* use very large capacity DDR (Double Data Rate SDRAM) for frame buffer */
+#define FREETOUP_FLAG_CG                  0x04000000  /* Conversion Gain: HCG, LCG */
+#define FREETOUP_FLAG_YUV411              0x08000000  /* pixel format, yuv411 */
+#define FREETOUP_FLAG_VUYY                0x10000000  /* pixel format, yuv422, VUYY */
+#define FREETOUP_FLAG_YUV444              0x20000000  /* pixel format, yuv444 */
+#define FREETOUP_FLAG_RGB888              0x40000000  /* pixel format, RGB888 */
+#define FREETOUP_FLAG_RAW8                0x80000000  /* pixel format, RAW 8 bits */
+#define FREETOUP_FLAG_GMCY8               0x0000000100000000  /* pixel format, GMCY, 8bits */
+#define FREETOUP_FLAG_GMCY12              0x0000000200000000  /* pixel format, GMCY, 12bits */
+#define FREETOUP_FLAG_UYVY                0x0000000400000000  /* pixel format, yuv422, UYVY */
+#define FREETOUP_FLAG_CGHDR               0x0000000800000000  /* Conversion Gain: HCG, LCG, HDR */
+#define FREETOUP_FLAG_GLOBALSHUTTER       0x0000001000000000  /* global shutter */
+#define FREETOUP_FLAG_FOCUSMOTOR          0x0000002000000000  /* support focus motor */
+#define FREETOUP_FLAG_PRECISE_FRAMERATE   0x0000004000000000  /* support precise framerate & bandwidth, see FREETOUP_OPTION_PRECISE_FRAMERATE & FREETOUP_OPTION_BANDWIDTH */
+#define FREETOUP_FLAG_HEAT                0x0000008000000000  /* heat to prevent fogging up */
+#define FREETOUP_FLAG_LOW_NOISE           0x0000010000000000  /* low noise mode */
+#define FREETOUP_FLAG_LEVELRANGE_HARDWARE 0x0000020000000000  /* hardware level range, put(get)_LevelRangeV2 */
+#define FREETOUP_FLAG_EVENT_HARDWARE      0x0000040000000000  /* hardware event, such as exposure start & stop */
 
 #define FREETOUP_BLACKLEVEL8_MAX 0
 
@@ -100,6 +129,7 @@ struct ft_camera {
     uint16_t vendor_id;  /* The USB vendor ID */
     uint16_t product_id;  /* The USB product ID */
     struct ft_sensor *sensor; /* The sensor that the camera has */
+    FreeToupModelV2 *model;
 };
 
 struct ft_handle {

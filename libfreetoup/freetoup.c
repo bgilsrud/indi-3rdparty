@@ -75,6 +75,7 @@ int FreeToup_EnumV2(FreeToupDeviceV2 cams[FREETOUP_MAX])
             /* FIXME: Figure out what this should be */
             snprintf(cams[found].id, sizeof(cams[found].id), "ft-%u-%u",
                 libusb_get_bus_number(device), libusb_get_device_address(device));
+            cams[found].model = cam->model;
             found++;
         }
     }
@@ -283,6 +284,7 @@ int FreeToup_get_Revision(HFreeToup ft, uint16_t *revision)
 {
     uint16_t val = 0;
     /* There is no USB traffic for this command. It's probably in the EEPROM data */
+    /* This could be a character in the serial number (like sn[8]) */
     *revision = le16toh(val);
     return 0;
 }

@@ -21,12 +21,25 @@
 #include <stddef.h>
 
 
+FreeToupModelV2 ar0130m_model = {
+    .flag = (FREETOUP_FLAG_CMOS | FREETOUP_FLAG_ROI_HARDWARE | FREETOUP_FLAG_MONO |
+             FREETOUP_FLAG_ST4 | FREETOUP_FLAG_RAW12 | FREETOUP_FLAG_TRIGGER_SOFTWARE |
+             FREETOUP_FLAG_TRIGGER_SINGLE | FREETOUP_FLAG_BLACKLEVEL | FREETOUP_FLAG_RAW8),
+    .maxspeed = 0,
+    .preview = 1,
+    .still= 1,
+    .maxfanspeed = 1,
+    .xpixsz = 3.75,
+    .ypixsz = 3.75
+};
+
 static const struct ft_camera supported_cameras[] = {
     {
         .name = "Meade LPI-GM",
         .vendor_id = 0x0549,
         .product_id = 0xe004,
-        .sensor = NULL
+        .sensor = NULL,
+        .model = &ar0130m_model
     },
     {0}
 };
