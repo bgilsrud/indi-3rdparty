@@ -32,8 +32,6 @@
 #include <endian.h>
 #endif /* __APPLE__ */
 
-#define ORION_SSG3_VID 0x07ee
-#define ORION_SSG3_PID 0x0502
 #define ORION_SSG3_INTERFACE_NUM 0
 #define ORION_SSG3_BULK_EP 0x82
 
@@ -47,7 +45,7 @@
 #define ICX419_EFFECTIVE_Y_START 12
 #define ICX419_EFFECTIVE_Y_COUNT 582
 #define ICX419_PIXEL_SIZE_X 8.6
-#define ICX419_PIXEL_SIZE_Y 8.4
+#define ICX419_PIXEL_SIZE_Y 8.3
 
 #define countof(x) (sizeof(x)/sizeof(x[0]))
 static const struct orion_ssg3_model ssg3_models[] = {
@@ -59,8 +57,8 @@ static const struct orion_ssg3_model ssg3_models[] = {
     },
     {
         .vid = 0x7ee,
-        .pid = 0x0501, /* This is a guess */
-        .name = "Orion StarShoot G3 Mono",
+        .pid = 0x0501,
+        .name = "Brightstar Mammut L429",
         .color = false
     }
 };
