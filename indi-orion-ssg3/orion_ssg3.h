@@ -68,8 +68,8 @@ int orion_ssg3_close(struct orion_ssg3 *ssg3);
 int orion_ssg3_set_gain(struct orion_ssg3 *ssg3, uint8_t gain);
 int orion_ssg3_set_offset(struct orion_ssg3 *ssg3, uint8_t offset);
 int orion_ssg3_set_binning(struct orion_ssg3 *ssg3, uint8_t x, uint8_t y);
-int orion_ssg3_subframe(struct orion_ssg3 *ssg3, uint16_t x1, uint16_t x_count,
-        uint16_t y1, uint16_t y_count);
+int orion_ssg3_subframe(struct orion_ssg3 *ssg3, uint16_t x1, uint16_t width,
+        uint16_t y1, uint16_t height);
 int orion_ssg3_start_exposure(struct orion_ssg3 *ssg3, uint32_t msec);
 int orion_ssg3_image_download(struct orion_ssg3 *ssg3, uint8_t *buf, int len);
 

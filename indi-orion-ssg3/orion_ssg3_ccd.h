@@ -50,6 +50,7 @@ class SSG3CCD : public INDI::CCD
 
     // CCD specific functions
     virtual bool UpdateCCDBin(int hor, int ver) override;
+    virtual bool UpdateCCDFrame(int x, int y, int w, int h);
     virtual bool StartExposure(float duration) override;
     virtual bool AbortExposure() override;
     virtual void TimerHit() override;

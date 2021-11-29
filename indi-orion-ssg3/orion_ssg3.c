@@ -389,43 +389,31 @@ int orion_ssg3_start_exposure(struct orion_ssg3 *ssg3, uint32_t msec)
     return rc;
 }
 
-static int get_x2(struct orion_ssg3 *ssg3)
-{
-    return ssg3->x1 + ssg3->x_count - 1;
-}
-
-static int get_y2(struct orion_ssg3 *ssg3)
-{
-    return ssg3->y1 + ssg3->y_count - 1;
-}
-
 /**
  * Set the subframe
  * The subframe selects which region of the CCD data will be sent to the host
  * via USB.
  * @param x1: The x offset in the effective pixel area
- * @param x_count: The number of horizontal pixels after x1
+ * @param width: The number of horizontal pixels after x1
  * @param y1: The y offset in the effective piyel area
- * @param y_count: The number of vertical rows after y1
+ * @param height: The number of vertical rows after y1
  * @return: 0 on success, -errno on failure
  */
-int orion_ssg3_subframe(struct orion_ssg3 *ssg3, uint16_t x1, uint16_t x_count,
-        uint16_t y1, uint16_t y_count)
+int orion_ssg3_subframe(struct orion_ssg3 *ssg3, uint16_t x1, uint16_t width,
+        uint16_t y1, uint16_t height)
 {
-    int rc;
+    if (x1 + width > ICX419_EFFECTIVE_X_COUNT)
+        return -EINVAL;
+    else if (y1 + height> ICX419_EFFECTIVE_Y_COUNT)
+        return -EINVAL;
 
     ssg3->x1 = ICX419_EFFECTIVE_X_START + x1;
-    ssg3->x_count = x_count;
+    ssg3->x_count = width;
 
     ssg3->y1 = ICX419_EFFECTIVE_Y_START + y1;
-    ssg3->y_count = y_count;
+    ssg3->y_count = height;
 
-    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_X_READOUT_START, ssg3->x1, 0);
-    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_X_READOUT_END, get_x2(ssg3), 0);
-
-    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_Y_READOUT_START, ssg3->y1, 0);
-    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_Y_READOUT_END, get_y2(ssg3), 0);
-    return rc;
+    return 0;
 }
 
 /**

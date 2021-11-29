@@ -83,13 +83,13 @@ bool SSG3CCD::Connect()
 
     rc = orion_ssg3_open(&ssg3, ssg3_info);
     if (rc) {
-        LOGF_ERROR("Unable to connect to Orion StartShoot G3: %s\n", strerror(-rc));
+        LOGF_ERROR("Unable to connect to supported camera: %s\n", strerror(-rc));
         return false;
     }
     LOG_DEBUG("Successfully opened");
 
     cap |= CCD_CAN_BIN;
-    //cap |= CCD_CAN_SUBFRAME;
+    cap |= CCD_CAN_SUBFRAME;
     cap |= CCD_HAS_COOLER;
     cap |= CCD_HAS_ST4_PORT;
     /* FIXME: kfitsviewer doesn't support CMYG
@@ -228,6 +228,39 @@ bool SSG3CCD::UpdateCCDBin(int x, int y)
     }
     return false;
 }
+
+bool SSG3CCD::UpdateCCDFrame(int x, int y, int w, int h)
+{
+    /* Add the X and Y offsets */
+    long x_1 = x / PrimaryCCD.getBinX();
+    long y_1 = y / PrimaryCCD.getBinY();
+
+    long x_2 = x_1 + (w / PrimaryCCD.getBinX());
+    long y_2 = y_1 + (h / PrimaryCCD.getBinY());
+
+    if (x_2 > PrimaryCCD.getXRes())
+    {
+        LOGF_ERROR("Error: Requested width out of bounds %ld", x_2);
+        return false;
+    }
+    else if (y_2 > PrimaryCCD.getYRes())
+    {
+        LOGF_ERROR("Error: Requested height out of bounds %ld", y_2);
+        return false;
+    }
+
+    orion_ssg3_subframe(&ssg3, x, w, y, h);
+    LOGF_DEBUG("The Final image area is (%ld, %ld), (%ld, %ld)\n", x_1, y_1, x_2, y_2);
+
+    int imageWidth  = x_2 - x_1;
+    int imageHeight = y_2 - y_1;
+
+    // Set UNBINNED coords
+    PrimaryCCD.setFrame(x, y, w, h);
+    PrimaryCCD.setFrameBufferSize(imageWidth * imageHeight * PrimaryCCD.getBPP() / 8);
+    return true;
+}
+
 
 /**
  * Client is asking to start exposure
