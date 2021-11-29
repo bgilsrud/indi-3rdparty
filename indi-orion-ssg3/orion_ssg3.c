@@ -335,31 +335,6 @@ int orion_ssg3_set_binning(struct orion_ssg3 *ssg3, uint8_t x, uint8_t y)
     }
     rc = orion_ssg3_control_set(ssg3, SSG3_CMD_BINNING, (x << 8) | y, 0);
     if (!rc) {
-        /* This complicated logic is to maintain the same ROI when changing binning */
-        if (x < ssg3->bin_x) {
-            ssg3->x1 = ssg3->bin_x * ssg3->x1 / x;
-            ssg3->x_count = ssg3->bin_x * ssg3->x_count / x;
-        }
-        if (y < ssg3->bin_y) {
-            ssg3->y1 = ssg3->bin_y * ssg3->y1 / y;
-            ssg3->y_count = ssg3->bin_y * ssg3->y_count / y;
-        }
-
-        if (y != ssg3->bin_y) {
-        }
-        if (ssg3->x1 <  ICX419_EFFECTIVE_X_START) {
-            ssg3->x1 = ICX419_EFFECTIVE_X_START;
-        }
-        if (ssg3->x1 + ssg3->x_count > ICX419_EFFECTIVE_X_COUNT) {
-            ssg3->x_count = ICX419_EFFECTIVE_X_COUNT;
-        }
-        if (ssg3->y1 <  ICX419_EFFECTIVE_Y_START) {
-            ssg3->y1 = ICX419_EFFECTIVE_Y_START;
-        }
-        if (ssg3->y1 + ssg3->y_count > ICX419_EFFECTIVE_Y_COUNT) {
-            ssg3->y_count = ICX419_EFFECTIVE_Y_COUNT;
-        }
-
         ssg3->bin_x = x;
         ssg3->bin_y = y;
     }
@@ -379,19 +354,19 @@ int orion_ssg3_start_exposure(struct orion_ssg3 *ssg3, uint32_t msec)
 {
     int rc;
 
-    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_X_READOUT_START, ssg3->x1, 0);
+    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_X_READOUT_START, ssg3->x1 / ssg3->bin_x, 0);
     if (rc)
         fprintf(stderr, "Failed to set x readout start: %d\n", rc);
     
-    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_X_READOUT_END, ssg3->x1 + ssg3->x_count - 1, 0);
+    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_X_READOUT_END, (ssg3->x1 + ssg3->x_count) / ssg3->bin_x - 1, 0);
     if (rc)
         fprintf(stderr, "Failed to set x readout end: %d\n", rc);
 
-    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_Y_READOUT_START, ssg3->y1, 0);
+    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_Y_READOUT_START, ssg3->y1 / ssg3->bin_y, 0);
     if (rc)
         fprintf(stderr, "Failed to set y readout start: %d\n", rc);
 
-    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_Y_READOUT_END, ssg3->y1 + ssg3->y_count - 1, 0);
+    rc = orion_ssg3_control_set(ssg3, SSG3_CMD_Y_READOUT_END, (ssg3->y1 + ssg3->y_count) / ssg3->bin_y - 1, 0);
     if (rc)
         fprintf(stderr, "Failed to set y readout end: %d\n", rc);
 
@@ -474,7 +449,7 @@ int orion_ssg3_image_download(struct orion_ssg3 *ssg3, uint8_t *buf, int len)
 
     frame = (uint16_t *) buf;
     
-    needed = ssg3->x_count * ssg3->y_count * 2; /* 2 bytes/pixel */
+    needed = (ssg3->x_count / ssg3->bin_x) * (ssg3->y_count / ssg3->bin_y) * 2; /* 2 bytes/pixel */
     if (needed < len) {
         return -ENOSPC;
     }
@@ -484,9 +459,9 @@ int orion_ssg3_image_download(struct orion_ssg3 *ssg3, uint8_t *buf, int len)
         return -ENOMEM;
     }
 
-    line_sz = ssg3->x_count * 2; /* 2 bytes/pixel */
+    line_sz = (ssg3->x_count / ssg3->bin_x) * 2; /* 2 bytes/pixel */
 
-    for (i = 0, fail_cnt = 0, total = 0; i < ssg3->y_count && fail_cnt < 10;) {
+    for (i = 0, fail_cnt = 0, total = 0; i < (ssg3->y_count / ssg3->bin_y) && fail_cnt < 10;) {
         rc = libusb_bulk_transfer(ssg3->devh, ORION_SSG3_BULK_EP, &(((unsigned char *) tmp)[i * line_sz]), line_sz, &got, 5000);
         if (!rc) {
             total += got;
@@ -497,23 +472,23 @@ int orion_ssg3_image_download(struct orion_ssg3 *ssg3, uint8_t *buf, int len)
         }
     }
 
-    fprintf(stderr, "needed = %d, total = %d, len = %d\n", needed, total, len);
+    //fprintf(stderr, "needed = %d, total = %d, len = %d\n", needed, total, len);
 
     /* The SSG3 has an interlace CCD, so the horizontal lines don't come out in order. Instead,
        they are split into an even and odd field. We get the even lines first and then the odd
        lines. This loop below de-interlaces the image to put the lines in the correct order
        in the frame buffer. */
-    for (y = 0; y < ssg3->y_count; y++) {
+    for (y = 0; y < (ssg3->y_count / ssg3->bin_y); y++) {
         int download_y; /* The y line in the download buffer */
         if (y % 2 == 0) {
             download_y = (y / 2);
         } else {
-            download_y = (ssg3->y_count / 2) + (y / 2);
+            download_y = ((ssg3->y_count / ssg3->bin_y) / 2) + (y / 2);
         }
 
-        for (x = 0; x < ssg3->x_count; x++) {
+        for (x = 0; x < (ssg3->x_count / ssg3->bin_x); x++) {
             /* The raw pixel data is sent big-endian */
-            frame[x + y * ssg3->x_count] = be16toh(tmp[x + download_y * ssg3->x_count]);
+            frame[x + y * (ssg3->x_count / ssg3->bin_x)] = be16toh(tmp[x + download_y * (ssg3->x_count / ssg3->bin_x)]);
         }
     }
 
